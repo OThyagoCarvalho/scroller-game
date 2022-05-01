@@ -38,7 +38,7 @@ class Player {
 }
 
 class Platform {
-  constructor({x, y}) {
+  constructor({ x, y }) {
     this.position = {
       x,
       y
@@ -56,7 +56,11 @@ class Platform {
 const player = new Player()
 
 //todo create platforms dynamicaly using random numbers.
-const platforms = [new Platform({x:200, y: 100}), new Platform({x:500, y: 300}), new Platform({x:800, y: 400})]
+const platforms = [
+  new Platform({ x: 200, y: 100 }),
+  new Platform({ x: 500, y: 300 }),
+  new Platform({ x: 800, y: 400 })
+]
 
 const keys = {
   right: {
@@ -66,15 +70,16 @@ const keys = {
     pressed: false
   }
 }
+//sscrollOffSet is used to set win condition and prevent player from scrolling to the left when already on the starting position
+let scrollOffSet = 0
 
 function animate() {
   requestAnimationFrame(animate)
   c.clearRect(0, 0, canvas.width, canvas.height)
   player.update()
   platforms.forEach(platform => {
-  platform.draw();
+    platform.draw()
   })
-  
 
   //adds left and right movement contained by player's position relative to the canvas
   //todo block player from moving so far left to outside of the starting position
@@ -86,24 +91,23 @@ function animate() {
     player.velocity.x = 0
   }
 
-  if(keys.right.pressed) {
+  if (keys.right.pressed && scrollOffSet >= 0) {
     platforms.forEach(platform => {
-      platform.draw();
+      platform.draw()
       platform.position.x -= 5
+      scrollOffSet += 1
     })
-    
-  } else if (keys.left.pressed) {
+  } else if (keys.left.pressed && scrollOffSet > 0) {
     platforms.forEach(platform => {
-      platform.draw();
+      platform.draw()
       platform.position.x += 5
-    })    
+      scrollOffSet -= 1
+    })
   }
-
-
 
   //player colision
   platforms.forEach(platform => {
-    platform.draw();
+    platform.draw()
     if (
       player.position.y + player.height <= platform.position.y &&
       player.position.y + player.height + player.velocity.y >=
@@ -114,7 +118,6 @@ function animate() {
       player.velocity.y = 0
     }
   })
-  
 }
 
 animate()
