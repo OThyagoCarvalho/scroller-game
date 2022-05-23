@@ -119,10 +119,18 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"src/images/platform.png":[function(require,module,exports) {
 module.exports = "/platform.d7a3b002.png";
+},{}],"src/images/hills.png":[function(require,module,exports) {
+module.exports = "/hills.5ec48ab3.png";
+},{}],"src/images/background.png":[function(require,module,exports) {
+module.exports = "/background.37f5c836.png";
 },{}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _platform = _interopRequireDefault(require("./images/platform.png"));
+
+var _hills = _interopRequireDefault(require("./images/hills.png"));
+
+var _background = _interopRequireDefault(require("./images/background.png"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -207,19 +215,59 @@ var Platform = /*#__PURE__*/function () {
   return Platform;
 }();
 
-var image = new Image();
-image.src = _platform.default;
-console.log(image);
-var player = new Player(); //todo create platforms dynamicaly using random numbers.
+var GenericObject = /*#__PURE__*/function () {
+  function GenericObject(_ref2) {
+    var x = _ref2.x,
+        y = _ref2.y,
+        image = _ref2.image;
 
+    _classCallCheck(this, GenericObject);
+
+    this.position = {
+      x: x,
+      y: y
+    };
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
+  }
+
+  _createClass(GenericObject, [{
+    key: "draw",
+    value: function draw() {
+      c.drawImage(this.image, this.position.x, this.position.y);
+    }
+  }]);
+
+  return GenericObject;
+}();
+
+function createImage(imageSrc) {
+  var image = new Image();
+  image.src = imageSrc;
+  return image;
+}
+
+var player = new Player();
+var genericObjects = [new GenericObject({
+  x: -1,
+  y: -1,
+  image: createImage(_background.default)
+}), new GenericObject({
+  x: -1,
+  y: -1,
+  image: createImage(_hills.default)
+})]; //todo create platforms dynamicaly using random numbers.
+
+var platformImage = createImage(_platform.default);
 var platforms = [new Platform({
   x: -1,
   y: 470,
-  image: image
+  image: createImage(_platform.default)
 }), new Platform({
-  x: image.width - 3,
+  x: platformImage.width - 3,
   y: 470,
-  image: image
+  image: createImage(_platform.default)
 })];
 var keys = {
   right: {
@@ -236,6 +284,9 @@ function animate() {
   requestAnimationFrame(animate);
   c.fillStyle = 'white';
   c.fillRect(0, 0, canvas.width, canvas.height);
+  genericObjects.forEach(function (genericObject) {
+    return genericObject.draw();
+  });
   platforms.forEach(function (platform) {
     platform.draw();
   });
@@ -256,11 +307,17 @@ function animate() {
       platform.position.x -= 5;
       scrollOffSet += 1;
     });
+    genericObjects.forEach(function (genericObject) {
+      genericObject.position.x -= 3;
+    });
   } else if (keys.left.pressed && scrollOffSet > 0) {
     platforms.forEach(function (platform) {
       platform.draw();
       platform.position.x += 5;
       scrollOffSet -= 1;
+    });
+    genericObjects.forEach(function (genericObject) {
+      genericObject.position.x += 3;
     });
   } //player colision
 
@@ -277,8 +334,8 @@ function animate() {
 animate(); //adds player movement
 //todo fine tune jump movement;
 
-window.addEventListener('keydown', function (_ref2) {
-  var key = _ref2.key;
+window.addEventListener('keydown', function (_ref3) {
+  var key = _ref3.key;
 
   switch (key) {
     case 'a':
@@ -294,8 +351,8 @@ window.addEventListener('keydown', function (_ref2) {
       break;
   }
 });
-window.addEventListener('keyup', function (_ref3) {
-  var key = _ref3.key;
+window.addEventListener('keyup', function (_ref4) {
+  var key = _ref4.key;
 
   switch (key) {
     case 'a':
@@ -311,7 +368,7 @@ window.addEventListener('keyup', function (_ref3) {
       break;
   }
 });
-},{"./images/platform.png":"src/images/platform.png"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./images/platform.png":"src/images/platform.png","./images/hills.png":"src/images/hills.png","./images/background.png":"src/images/background.png"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -339,7 +396,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56532" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55087" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
