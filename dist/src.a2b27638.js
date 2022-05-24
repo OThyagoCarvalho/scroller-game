@@ -179,8 +179,6 @@ var Player = /*#__PURE__*/function () {
 
       if (this.position.y + this.height + this.velocity.y <= canvas.height) {
         this.velocity.y += gravity;
-      } else {
-        this.velocity.y = 0;
       }
     }
   }]);
@@ -268,6 +266,10 @@ var platforms = [new Platform({
   x: platformImage.width - 3,
   y: 470,
   image: createImage(_platform.default)
+}), new Platform({
+  x: platformImage.width * 2 + 200,
+  y: 470,
+  image: createImage(_platform.default)
 })];
 var keys = {
   right: {
@@ -276,9 +278,39 @@ var keys = {
   left: {
     pressed: false
   }
-}; //sscrollOffSet is used to set win condition and prevent player from scrolling to the left when already on the starting position
+}; //scrollOffSet is used to set win condition and prevent player from scrolling to the left when already on the starting position
 
 var scrollOffSet = 0;
+
+function init() {
+  player = new Player();
+  genericObjects = [new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(_background.default)
+  }), new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(_hills.default)
+  })]; //todo create platforms dynamicaly using random numbers.
+
+  platformImage = createImage(_platform.default);
+  platforms = [new Platform({
+    x: -1,
+    y: 470,
+    image: createImage(_platform.default)
+  }), new Platform({
+    x: platformImage.width - 3,
+    y: 470,
+    image: createImage(_platform.default)
+  }), new Platform({
+    x: platformImage.width * 2 + 200,
+    y: 470,
+    image: createImage(_platform.default)
+  })]; //scrollOffSet is used to set win condition and prevent player from scrolling to the left when already on the starting position
+
+  scrollOffSet = 0;
+}
 
 function animate() {
   requestAnimationFrame(animate);
@@ -291,7 +323,6 @@ function animate() {
     platform.draw();
   });
   player.update(); //adds left and right movement contained by player's position relative to the canvas
-  //todo block player from moving so far left to outside of the starting position
 
   if (keys.right.pressed && player.position.x < canvas.width / 3) {
     player.velocity.x = 5;
@@ -328,7 +359,11 @@ function animate() {
     if (player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width) {
       player.velocity.y = 0;
     }
-  });
+  }); //lose condition after falling bellow canvas
+
+  if (player.position.y > canvas.height) {
+    init();
+  }
 }
 
 animate(); //adds player movement
@@ -396,7 +431,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55087" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61550" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

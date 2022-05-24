@@ -1,8 +1,8 @@
-import platform from "./images/platform.png"
-import hills from "./images/hills.png"
-import background from "./images/background.png"
+import platform from './images/platform.png'
+import hills from './images/hills.png'
+import background from './images/background.png'
 
-console.log(platform);
+console.log(platform)
 
 const canvas = document.querySelector('canvas')
 console.log(canvas)
@@ -36,8 +36,6 @@ class Player {
     this.position.y += this.velocity.y
     if (this.position.y + this.height + this.velocity.y <= canvas.height) {
       this.velocity.y += gravity
-    } else {
-      this.velocity.y = 0
     }
   }
 }
@@ -51,8 +49,6 @@ class Platform {
     this.image = image
     this.width = image.width
     this.height = image.height
-
-    
   }
 
   draw() {
@@ -69,8 +65,6 @@ class GenericObject {
     this.image = image
     this.width = image.width
     this.height = image.height
-
-    
   }
 
   draw() {
@@ -78,33 +72,41 @@ class GenericObject {
   }
 }
 
-function createImage (imageSrc) {
+function createImage(imageSrc) {
   const image = new Image()
   image.src = imageSrc
   return image
 }
 
 
-
-const player = new Player()
-const  genericObjects = [
-  new GenericObject ({
-    x:-1,
-    y:-1,
+let player = new Player()
+let genericObjects = [
+  new GenericObject({
+    x: -1,
+    y: -1,
     image: createImage(background)
   }),
-  new GenericObject ({
-    x:-1,
-    y:-1,
+  new GenericObject({
+    x: -1,
+    y: -1,
     image: createImage(hills)
   })
 ]
 
 //todo create platforms dynamicaly using random numbers.
-const platformImage = createImage(platform);
-const platforms = [
-  new Platform({ x: -1, y: 470, image: createImage(platform)}),
-  new Platform({ x: platformImage.width - 3, y: 470, image: createImage(platform)})
+let platformImage = createImage(platform)
+let platforms = [
+  new Platform({ x: -1, y: 470, image: createImage(platform) }),
+  new Platform({
+    x: platformImage.width - 3,
+    y: 470,
+    image: createImage(platform)
+  }),
+  new Platform({
+    x: platformImage.width * 2 + 200,
+    y: 470,
+    image: createImage(platform)
+  })
 ]
 const keys = {
   right: {
@@ -114,23 +116,59 @@ const keys = {
     pressed: false
   }
 }
-//sscrollOffSet is used to set win condition and prevent player from scrolling to the left when already on the starting position
+//scrollOffSet is used to set win condition and prevent player from scrolling to the left when already on the starting position
 let scrollOffSet = 0
+
+function init () {
+
+  
+ player = new Player()
+ genericObjects = [
+  new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(background)
+  }),
+  new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(hills)
+  })
+]
+
+//todo create platforms dynamicaly using random numbers.
+ platformImage = createImage(platform)
+ platforms = [
+  new Platform({ x: -1, y: 470, image: createImage(platform) }),
+  new Platform({
+    x: platformImage.width - 3,
+    y: 470,
+    image: createImage(platform)
+  }),
+  new Platform({
+    x: platformImage.width * 2 + 200,
+    y: 470,
+    image: createImage(platform)
+  })
+]
+ 
+//scrollOffSet is used to set win condition and prevent player from scrolling to the left when already on the starting position
+scrollOffSet = 0
+}
+
 
 function animate() {
   requestAnimationFrame(animate)
   c.fillStyle = 'white'
   c.fillRect(0, 0, canvas.width, canvas.height)
-  
-  genericObjects.forEach(genericObject => 
-    genericObject.draw())
+
+  genericObjects.forEach(genericObject => genericObject.draw())
   platforms.forEach(platform => {
     platform.draw()
   })
   player.update()
 
   //adds left and right movement contained by player's position relative to the canvas
-  //todo block player from moving so far left to outside of the starting position
   if (keys.right.pressed && player.position.x < canvas.width / 3) {
     player.velocity.x = 5
   } else if (keys.left.pressed && player.position.x > 100) {
@@ -157,7 +195,6 @@ function animate() {
     genericObjects.forEach(genericObject => {
       genericObject.position.x += 3
     })
-
   }
 
   //player colision
@@ -173,6 +210,11 @@ function animate() {
       player.velocity.y = 0
     }
   })
+
+  //lose condition after falling bellow canvas
+  if (player.position.y > canvas.height) {
+    init()
+  }
 }
 
 animate()
